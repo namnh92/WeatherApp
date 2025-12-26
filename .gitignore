@@ -1,0 +1,59 @@
+# ===============================
+# Xcode
+# ===============================
+DerivedData/
+.build/
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# ===============================
+# Swift Package Manager
+# ===============================
+.swiftpm/
+Package.resolved
+
+# ===============================
+# CocoaPods (nếu có)
+# ===============================
+Pods/
+Podfile.lock
+
+# ===============================
+# Carthage (nếu có)
+# ===============================
+Carthage/Build/
+
+# ===============================
+# Fastlane (nếu có)
+# ===============================
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# ===============================
+# Logs & temp
+# ===============================
+*.log
+*.tmp
+*.swp
+*.lock
+*.DS_Store
+
+# ===============================
+# Environment / Secrets
+# ===============================
+*.env
+
+# ===============================
+# User-specific settings
+# ===============================
+.idea/
+.vscode/
+
+# ===============================
+# Playgrounds
+# ===============================
+timeline.xctimeline
+playground.xcworkspace

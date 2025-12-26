@@ -1,0 +1,13 @@
+//
+//  Debug.xcconfig
+//  WeatherApp
+//
+//  Created by Max Nguyen on 26/12/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+// API Config
+API_BASE_URL = api.worldweatheronline.com/premium/v1/
+API_KEY = 0d5142aeb5044391bbf154031252512
