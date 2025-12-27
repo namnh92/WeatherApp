@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CityRepositoryImpl {
+struct CityRepositoryImpl {
     private let client: HTTPClient
     private let queryAdapter: QueryAdapter
     private let responseAdapter: ResponseAdapter

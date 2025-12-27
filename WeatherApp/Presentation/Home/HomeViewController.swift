@@ -58,11 +58,18 @@ class HomeViewController: UIViewController {
         setupUI()
         bindViewModel()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        clearSearch()
+    }
 }
 
 // MARK: - Setup UIs
 private extension HomeViewController {
     func setupUI() {
+        title = "Home"
         setupTable()
         setupSearch()
     }
@@ -109,9 +116,14 @@ private extension HomeViewController {
         latestState = state
         tableView.reloadData()
     }
+    
+    func clearSearch() {
+        searchController.searchBar.text = nil
+        viewModel.onSearchTextChanged("")
+    }
 }
 
-// MARK: - UITableViewDelegate
+// MARK: - UITableViewDataSource
 extension HomeViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return Section.allCases.count
@@ -188,11 +200,20 @@ extension HomeViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
+        guard let section = Section(rawValue: section) else { return 0.01 }
+        switch section {
+        case .recent:
+            return 44
+        case .results:
+            return latestState.query.isEmpty ? 0.01 : 44
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let section = Section(rawValue: section) else { return nil }
+        if section == .results && latestState.query.isEmpty {
+            return nil
+        }
         let container = UIView()
         container.backgroundColor = .clear
         
