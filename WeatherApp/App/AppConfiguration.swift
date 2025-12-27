@@ -8,12 +8,24 @@
 import Foundation
 
 enum AppConfiguration {
-    static var apiKey: String {
-        return value(for: "API_KEY")
+    enum API {
+        static var apiKey: String {
+            return value(for: "API_KEY")
+        }
+        
+        static var apiBaseURL: String {
+            return "https://" + value(for: "API_BASE_URL")
+        }
     }
     
-    static var apiBaseURL: String {
-        return "https://" + value(for: "API_BASE_URL")
+    enum Store {
+        static var recentCities: String {
+            return "recentCities"
+        }
+        
+        static var maxItem: Int {
+            return 10
+        }
     }
     
     static var debounceTime: TimeInterval {
