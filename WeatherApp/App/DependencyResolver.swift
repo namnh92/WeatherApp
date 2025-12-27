@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 class DependencyResolver {
     //MARK: - Singleton
@@ -20,9 +21,11 @@ class DependencyResolver {
     
     //MARK: - Repositories
     private lazy var cityRepository: ICityRepository = CityRepositoryImpl(client: httpClient, queryAdapter: queryAdapter, responseAdapter: responseAdapter)
+    private lazy var weatherRepository: IWeatherRepository = WeatherRepositoryImpl(client: httpClient, queryAdapter: queryAdapter, responseAdapter: responseAdapter)
     
     //MARK: - UseCases
     private lazy var getCityUseCase: IGetCityUseCase = GetCityUseCase(repository: cityRepository)
+    private lazy var getWeatherUseCase: IGetWeatherUseCase = GetWeatherUseCase(repository: weatherRepository)
     
     //MARK: - ViewModels
     func makeHomeViewModel() -> HomeViewModel {
@@ -36,11 +39,18 @@ extension DependencyResolver {
         let vm = makeHomeViewModel()
         let vc = HomeViewController(viewModel: vm)
 
-        vc.onCitySelected = { [weak navigation] city in
-            guard let navigation else { return }
-            // TODO: City Screen
+        vc.onCitySelected = { [weak navigation, weak self] city in
+            guard let navigation, let self else { return }
+            let cityView = self.makeCityView(city: city)
+            let host = UIHostingController(rootView: cityView)
+            navigation.pushViewController(host, animated: true)
         }
 
         return vc
+    }
+    
+    func makeCityView(city: City) -> CityView {
+        let vm = CityViewModel(city: city, useCase: getWeatherUseCase)
+        return CityView(city: city, viewModel: vm)
     }
 }
