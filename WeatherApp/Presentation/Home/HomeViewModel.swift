@@ -12,6 +12,7 @@ protocol IHomeViewModel {
 class HomeViewModel: IHomeViewModel {
     // MARK: - Variables
     private let getCityUseCase: IGetCityUseCase
+    private let getRecentCityUseCase: IGetRecentCityUseCase
     private let debouncer: AsyncDebouncer
     
     var onStateChange: ((HomeViewState) -> Void)?
@@ -21,8 +22,11 @@ class HomeViewModel: IHomeViewModel {
     }
     
     // MARK: - Initial
-    init(getCityUseCase: IGetCityUseCase, debouncer: AsyncDebouncer) {
+    init(getCityUseCase: IGetCityUseCase,
+         getRecentCityUseCase: IGetRecentCityUseCase,
+         debouncer: AsyncDebouncer) {
         self.getCityUseCase = getCityUseCase
+        self.getRecentCityUseCase = getRecentCityUseCase
         self.debouncer = debouncer
     }
     
@@ -40,6 +44,14 @@ class HomeViewModel: IHomeViewModel {
             guard let self else { return }
             Task { await self.search(query: text) }
         }
+    }
+    
+    func onViewWillAppear() {
+        state.recentCities = getRecentCityUseCase.execute(AppConfiguration.Store.maxItem)
+    }
+    
+    func cityViewed(_ city: City) {
+        getRecentCityUseCase.save(city)
     }
 }
 

@@ -62,6 +62,7 @@ class HomeViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        viewModel.onViewWillAppear()
         clearSearch()
     }
 }
@@ -246,6 +247,7 @@ extension HomeViewController: UITableViewDelegate {
             if latestState.searchResults.isEmpty || latestState.errorMessage != nil { return }
             city = latestState.searchResults[indexPath.row]
         }
+        viewModel.cityViewed(city)
         onCitySelected?(city)
     }
 }
