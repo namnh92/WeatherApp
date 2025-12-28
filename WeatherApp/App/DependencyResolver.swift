@@ -21,7 +21,7 @@ class DependencyResolver {
     
     //MARK: - Repositories
     private lazy var cityRepository: ICityRepository = CityRepositoryImpl(client: httpClient, queryAdapter: queryAdapter, responseAdapter: responseAdapter)
-    private lazy var weatherRepository: IWeatherRepository = WeatherRepositoryImpl(client: httpClient, queryAdapter: queryAdapter, responseAdapter: responseAdapter)
+    private lazy var weatherRepository: IWeatherRepository = WeatherRepositoryImpl(client: httpClient, queryAdapter: queryAdapter, responseAdapter: responseAdapter, cache: WeatherCache())
     
     //MARK: - Store
     private lazy var recentStore: IRecentCityStore = UserDefaultsRecentCityStore()

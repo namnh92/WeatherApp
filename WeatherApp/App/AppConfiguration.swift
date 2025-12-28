@@ -32,6 +32,10 @@ enum AppConfiguration {
         return 1.0
     }
     
+    static var cacheExpiredTime: TimeInterval {
+        return 60.0
+    }
+    
     private static func value(for key: String) -> String {
         guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String else {
             fatalError("Missing or empty \(key) in Info.plist / xcconfig")
