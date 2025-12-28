@@ -6,5 +6,5 @@
 //
 
 protocol IWeatherRepository {
-    func getWeather(latitude: Double, longitude: Double) async throws -> Weather
+    func getWeather(city: City) async throws -> Weather
 }

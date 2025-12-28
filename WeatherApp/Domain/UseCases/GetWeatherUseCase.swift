@@ -6,7 +6,7 @@
 //
 
 protocol IGetWeatherUseCase {
-    func execute(lattitude: Double, longitude: Double) async throws -> Weather
+    func execute(city: City) async throws -> Weather
 }
 
 struct GetWeatherUseCase: IGetWeatherUseCase {
@@ -16,7 +16,7 @@ struct GetWeatherUseCase: IGetWeatherUseCase {
         self.repository = repository
     }
     
-    func execute(lattitude: Double, longitude: Double) async throws -> Weather {
-        return try await repository.getWeather(latitude: lattitude, longitude: longitude)
+    func execute(city: City) async throws -> Weather {
+        return try await repository.getWeather(city: city)
     }
 }
