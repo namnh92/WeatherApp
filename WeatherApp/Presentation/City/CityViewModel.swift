@@ -29,7 +29,7 @@ class CityViewModel: ObservableObject {
 
         Task {
             do {
-                let weather = try await useCase.execute(lattitude: city.latitude, longitude: city.longitude)
+                let weather = try await useCase.execute(city: city)
                 state.weather = weather
                 state.isLoading = false
             } catch is CancellationError {

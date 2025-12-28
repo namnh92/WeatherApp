@@ -51,20 +51,13 @@ struct CityView: View {
 
             // Weather image
             if let url = weather.iconURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image.resizable().scaledToFit()
-                            .frame(width: 64, height: 64)
-                    case .failure:
-                        Image(systemName: "cloud")
-                            .font(.system(size: 40))
-                            .foregroundStyle(.secondary)
-                    @unknown default:
-                        EmptyView()
-                    }
+                CachedAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 64, height: 64)
+                } placeholder: {
+                    ProgressView()
                 }
             }
 

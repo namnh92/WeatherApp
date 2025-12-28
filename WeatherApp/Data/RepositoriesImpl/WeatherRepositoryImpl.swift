@@ -11,11 +11,13 @@ struct WeatherRepositoryImpl {
     private let client: HTTPClient
     private let queryAdapter: QueryAdapter
     private let responseAdapter: ResponseAdapter
+    private let cache: WeatherCache
     
-    init(client: HTTPClient, queryAdapter: QueryAdapter, responseAdapter: ResponseAdapter) {
+    init(client: HTTPClient, queryAdapter: QueryAdapter, responseAdapter: ResponseAdapter, cache: WeatherCache) {
         self.client = client
         self.queryAdapter = queryAdapter
         self.responseAdapter = responseAdapter
+        self.cache = cache
     }
 }
 
@@ -49,8 +51,12 @@ extension ResponseAdapter {
 
 // MARK: - ICityRepository
 extension WeatherRepositoryImpl: IWeatherRepository {
-    func getWeather(latitude: Double, longitude: Double) async throws -> Weather {
-        let request = queryAdapter.getWeather(latitude: latitude, longitude: longitude)
+    func getWeather(city: City) async throws -> Weather {
+        if let cached = cache.get(cityId: city.id) {
+            return cached
+        }
+        
+        let request = queryAdapter.getWeather(latitude: city.latitude, longitude: city.longitude)
         let (data, http) = try await client.data(for: request)
         
         guard (200..<300).contains(http.statusCode) else {
@@ -58,6 +64,7 @@ extension WeatherRepositoryImpl: IWeatherRepository {
         }
         
         let weather = try responseAdapter.getWeather(data)
+        cache.set(weather, cityId: city.id)
         return weather
     }
 }
