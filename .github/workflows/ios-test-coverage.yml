@@ -52,13 +52,12 @@ jobs:
           set -euo pipefail
 
           xcodebuild test \
-            -project WeatherApp.xcodeproj \
-            -scheme WeatherApp \
-            -testPlan WeatherApp \
-            -destination "platform=iOS Simulator,id=${SIM_UDID}" \
-            -enableCodeCoverage YES \
-            -resultBundlePath TestResults.xcresult \
-            -destination-timeout 120
+          -project WeatherApp.xcodeproj \
+          -scheme WeatherApp \
+          -testPlan WeatherApp \
+          -destination 'platform=iOS Simulator,OS=18.2,name=iPhone 16 Pro' \
+          -enableCodeCoverage YES \
+          -resultBundlePath TestResults.xcresult
 
       - name: Generate coverage report (xccov JSON)
         run: |
