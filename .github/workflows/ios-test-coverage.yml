@@ -28,17 +28,27 @@ jobs:
           xcrun simctl list devicetypes | head
           xcrun simctl list devices available
 
-      - name: Create and boot iOS simulator
+      - name: Boot iPhone 16 Pro (iOS 18.2)
         run: |
           set -euo pipefail
-          RUNTIME=$(xcrun simctl list runtimes | awk -F'[()]' '/iOS/ && /available/ {print $2}' | tail -n 1)
-          DEVTYPE=$(xcrun simctl list devicetypes | awk -F'[()]' '/iPhone 15 Pro/ {print $2; exit}')
-          UDID=$(xcrun simctl create "CI-iPhone" "$DEVTYPE" "$RUNTIME")
-          xcrun simctl boot "$UDID"
-          xcrun simctl bootstatus "$UDID" -b
-          echo "SIMULATOR_UDID=$UDID" >> $GITHUB_ENV
 
-      - name: Run tests (with coverage) and create xcresult
+          UDID=$(xcrun simctl list devices "iOS 18.2" | \
+            grep -E "iPhone 16 Pro \\(" | head -n 1 | \
+            sed -E 's/.*\\(([0-9A-F-]+)\\).*/\\1/')
+
+          if [ -z "$UDID" ]; then
+            echo "Could not find iPhone 16 Pro on iOS 18.2"
+            xcrun simctl list devices
+            exit 1
+          fi
+
+          echo "SIM_UDID=$UDID" >> $GITHUB_ENV
+
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl list devices | grep "$UDID" || true
+
+      - name: Run tests (with coverage) on simulator
         run: |
           set -euo pipefail
 
@@ -46,9 +56,10 @@ jobs:
             -project WeatherApp.xcodeproj \
             -scheme WeatherApp \
             -testPlan WeatherApp \
-            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
+            -destination "platform=iOS Simulator,id=${SIM_UDID}" \
             -enableCodeCoverage YES \
-            -resultBundlePath TestResults.xcresult
+            -resultBundlePath TestResults.xcresult \
+            -destination-timeout 120
 
       - name: Generate coverage report (xccov JSON)
         run: |
