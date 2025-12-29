@@ -33,20 +33,19 @@ jobs:
           set -euo pipefail
 
           UDID=$(xcrun simctl list devices "iOS 18.2" | \
-            grep -E "iPhone 16 Pro \\(" | head -n 1 | \
-            sed -E 's/.*\\(([0-9A-F-]+)\\).*/\\1/')
+            awk -F '[()]' '/iPhone 16 Pro/ {print $2; exit}')
 
           if [ -z "$UDID" ]; then
-            echo "Could not find iPhone 16 Pro on iOS 18.2"
-            xcrun simctl list devices
+            echo "❌ Could not find iPhone 16 Pro on iOS 18.2"
+            xcrun simctl list devices "iOS 18.2"
             exit 1
           fi
 
+          echo "✅ Using simulator UDID: $UDID"
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b
-          xcrun simctl list devices | grep "$UDID" || true
 
       - name: Run tests (with coverage) on simulator
         run: |
