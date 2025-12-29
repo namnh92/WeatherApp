@@ -1,0 +1,56 @@
+{
+    "search_api": {
+        "result": [
+            {
+                "areaName": [
+                    {
+                        "value": "Hong Kong"
+                    }
+                ],
+                "country": [
+                    {
+                        "value": "Hong Kong"
+                    }
+                ],
+                "region": [
+                    {
+                        "value": ""
+                    }
+                ],
+                "latitude": "22.283",
+                "longitude": "114.150",
+                "population": "7061200",
+                "weatherUrl": [
+                    {
+                        "value": "https://www.worldweatheronline.com/v2/weather.aspx?q=22.2833,114.15"
+                    }
+                ]
+            },
+            {
+                "areaName": [
+                    {
+                        "value": "Hong Kong"
+                    }
+                ],
+                "country": [
+                    {
+                        "value": "Mexico"
+                    }
+                ],
+                "region": [
+                    {
+                        "value": "Baja California Sur"
+                    }
+                ],
+                "latitude": "22.958",
+                "longitude": "-109.939",
+                "population": "5",
+                "weatherUrl": [
+                    {
+                        "value": "https://www.worldweatheronline.com/v2/weather.aspx?q=22.9581,-109.939"
+                    }
+                ]
+            }
+        ]
+    }
+}

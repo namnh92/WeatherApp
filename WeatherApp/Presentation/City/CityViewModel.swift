@@ -27,13 +27,14 @@ class CityViewModel: ObservableObject {
         state.isLoading = true
         state.errorMessage = nil
 
-        Task {
+        Task { @MainActor in
             do {
                 let weather = try await useCase.execute(city: city)
                 state.weather = weather
                 state.isLoading = false
             } catch is CancellationError {
                 state.isLoading = false
+                return
             } catch let apiError as APIError {
                 state.errorMessage = apiError.userMessage
                 state.isLoading = false
@@ -44,3 +45,17 @@ class CityViewModel: ObservableObject {
         }
     }
 }
+
+#if DEBUG
+extension CityViewModel {
+    @MainActor
+    func _test_setWeather(_ weather: Weather?) {
+        state.weather = weather
+    }
+
+    @MainActor
+    func _test_setLoading(_ isLoading: Bool) {
+        state.isLoading = isLoading
+    }
+}
+#endif

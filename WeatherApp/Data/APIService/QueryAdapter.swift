@@ -7,14 +7,20 @@
 
 import Foundation
 
-class QueryAdapter {
+enum QueryAdapterError: Error, Equatable {
+    case missingBaseURL
+}
+
+protocol IQueryAdapter: ICityQueryAdapter, IWeatherQueryAdapter {}
+
+class QueryAdapter: IQueryAdapter {
     let apiConfig: APIConfig
     let url: URL
     
-    init(apiConfig: APIConfig) {
+    init(apiConfig: APIConfig) throws {
         self.apiConfig = apiConfig
         guard let baseURL = apiConfig.apiBaseURL else {
-            fatalError("API base URL is required")
+            throw QueryAdapterError.missingBaseURL
         }
         self.url = baseURL.appending(queryItems: [
             .init(name: "format", value: apiConfig.format),

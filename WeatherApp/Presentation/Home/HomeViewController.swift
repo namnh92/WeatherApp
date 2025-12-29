@@ -12,7 +12,7 @@ class HomeViewController: UIViewController {
     static let cellIdentifier: String = "CityCell"
     
     // MARK: - Types
-    private enum Section: Int, CaseIterable {
+    enum Section: Int, CaseIterable {
         case recent
         case results
         
@@ -35,18 +35,19 @@ class HomeViewController: UIViewController {
     private lazy var spinnerItem = UIBarButtonItem(customView: spinner)
     
     // MARK: - Dependencies
-    private let viewModel: HomeViewModel
+    private var viewModel: IHomeViewModel
     var onCitySelected: ((City) -> Void)?
     
     // MARK: - State
     private var latestState = HomeViewState()
     
     // MARK: - Init
-    init(viewModel: HomeViewModel) {
+    init(viewModel: IHomeViewModel) {
         self.viewModel = viewModel
         super.init(nibName: String(describing: HomeViewController.self), bundle: Bundle.main)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -139,7 +140,6 @@ extension HomeViewController: UITableViewDataSource {
         case .results:
             if let _ = latestState.errorMessage { return 1 }
             if latestState.isLoading && latestState.searchResults.isEmpty { return 1 }
-            if latestState.searchResults.isEmpty && !latestState.query.isEmpty { return 1 }
             if latestState.query.isEmpty { return 0 }
             return latestState.searchResults.count
         }
@@ -178,13 +178,6 @@ extension HomeViewController: UITableViewDataSource {
             
             if latestState.isLoading && latestState.searchResults.isEmpty {
                 cell.textLabel?.text = "Loading..."
-                cell.textLabel?.textColor = .secondaryLabel
-                cell.selectionStyle = .none
-                return cell
-            }
-            
-            if latestState.searchResults.isEmpty && !latestState.query.isEmpty {
-                cell.textLabel?.text = "No matching cities."
                 cell.textLabel?.textColor = .secondaryLabel
                 cell.selectionStyle = .none
                 return cell
@@ -261,3 +254,35 @@ extension HomeViewController: UISearchBarDelegate {
         viewModel.onSearchTextChanged(searchText)
     }
 }
+
+#if DEBUG
+extension HomeViewController {
+    func tableViewNumberOfSectionsForTesting() -> Int {
+        tableView.numberOfSections
+    }
+
+    func tableViewNumberOfRowsForTesting(section: Int) -> Int {
+        self.tableView(tableView, numberOfRowsInSection: section)
+    }
+
+    func tableViewCellForTesting(section: Int, row: Int) -> UITableViewCell? {
+        self.tableView(tableView, cellForRowAt: IndexPath(row: row, section: section))
+    }
+
+    func tableViewDidSelectRowForTesting(section: Int, row: Int) {
+        self.tableView(tableView, didSelectRowAt: IndexPath(row: row, section: section))
+    }
+    
+    func searchTextForTesting_set(_ text: String) {
+        navigationItem.searchController?.searchBar.text = text
+    }
+
+    func searchTextForTesting_get() -> String? {
+        navigationItem.searchController?.searchBar.text
+    }
+
+    func triggerViewWillAppearForTesting() {
+        viewWillAppear(false)
+    }
+}
+#endif
