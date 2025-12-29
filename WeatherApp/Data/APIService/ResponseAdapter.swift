@@ -7,7 +7,9 @@
 
 import Foundation
 
-class ResponseAdapter {
+protocol IResponseAdapter: ICityResponseAdapter, IWeatherResponseAdapter {}
+
+class ResponseAdapter: IResponseAdapter {
     let decoder: JSONDecoder
     
     init(decoder: JSONDecoder = .init()) {

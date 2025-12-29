@@ -17,7 +17,7 @@ struct GetCityUseCase: IGetCityUseCase {
     }
     
     func execute(_ query: String) async throws -> [City] {
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = query.normalizedSpaces()
         return try await repository.getCities(trimmed)
     }
 }

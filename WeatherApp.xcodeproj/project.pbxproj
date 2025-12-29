@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B5134DCC2F01A04600623A0A /* WeatherApp.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = B5134DCB2F01A04600623A0A /* WeatherApp.xctestplan */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B5F6805B2EFE72D4009FAD69 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B5134DCB2F01A04600623A0A /* WeatherApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = WeatherApp.xctestplan; sourceTree = "<group>"; };
 		B5F680442EFE72D2009FAD69 /* WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5F6805A2EFE72D4009FAD69 /* WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5F680642EFE72D4009FAD69 /* WeatherAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,11 +56,6 @@
 		B5F6805D2EFE72D4009FAD69 /* WeatherAppTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = WeatherAppTests;
-			sourceTree = "<group>";
-		};
-		B5F680672EFE72D4009FAD69 /* WeatherAppUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WeatherAppUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -88,9 +88,9 @@
 		B5F6803B2EFE72D2009FAD69 = {
 			isa = PBXGroup;
 			children = (
+				B5134DCB2F01A04600623A0A /* WeatherApp.xctestplan */,
 				B5F680462EFE72D2009FAD69 /* WeatherApp */,
 				B5F6805D2EFE72D4009FAD69 /* WeatherAppTests */,
-				B5F680672EFE72D4009FAD69 /* WeatherAppUITests */,
 				B5F680452EFE72D2009FAD69 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -166,9 +166,6 @@
 			dependencies = (
 				B5F680662EFE72D4009FAD69 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				B5F680672EFE72D4009FAD69 /* WeatherAppUITests */,
-			);
 			name = WeatherAppUITests;
 			packageProductDependencies = (
 			);
@@ -225,6 +222,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5134DCC2F01A04600623A0A /* WeatherApp.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

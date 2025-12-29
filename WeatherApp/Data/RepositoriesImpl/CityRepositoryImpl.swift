@@ -7,12 +7,20 @@
 
 import Foundation
 
+protocol ICityQueryAdapter {
+    func getCities(_ query: String) -> URLRequest
+}
+
+protocol ICityResponseAdapter {
+    func getCities(_ data: Data) throws -> [City]
+}
+
 struct CityRepositoryImpl {
     private let client: HTTPClient
-    private let queryAdapter: QueryAdapter
-    private let responseAdapter: ResponseAdapter
+    private let queryAdapter: IQueryAdapter
+    private let responseAdapter: IResponseAdapter
     
-    init(client: HTTPClient, queryAdapter: QueryAdapter, responseAdapter: ResponseAdapter) {
+    init(client: HTTPClient, queryAdapter: IQueryAdapter, responseAdapter: IResponseAdapter) {
         self.client = client
         self.queryAdapter = queryAdapter
         self.responseAdapter = responseAdapter

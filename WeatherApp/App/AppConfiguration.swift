@@ -7,14 +7,22 @@
 
 import Foundation
 
+enum AppConfigurationError: Error, Equatable {
+    case missingOrEmpty(String)
+}
+
 enum AppConfiguration {
     enum API {
         static var apiKey: String {
-            return value(for: "API_KEY")
+            return try! value(for: "API_KEY")
         }
         
         static var apiBaseURL: String {
-            return "https://" + value(for: "API_BASE_URL")
+            return "https://" + (try! value(for: "API_BASE_URL"))
+        }
+        
+        static var format: String {
+            return "json"
         }
     }
     
@@ -36,9 +44,10 @@ enum AppConfiguration {
         return 60.0
     }
     
-    private static func value(for key: String) -> String {
-        guard let value = Bundle.main.object(forInfoDictionaryKey: key) as? String else {
-            fatalError("Missing or empty \(key) in Info.plist / xcconfig")
+    static func value(for key: String, bundle: Bundle = .main) throws -> String {
+        guard let value = bundle.object(forInfoDictionaryKey: key) as? String,
+              !value.isEmpty else {
+            throw AppConfigurationError.missingOrEmpty(key)
         }
         return value
     }

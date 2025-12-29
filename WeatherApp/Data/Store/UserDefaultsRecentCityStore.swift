@@ -8,9 +8,13 @@
 import Foundation
 
 class UserDefaultsRecentCityStore: IRecentCityStore {
-    private let userDefaults = UserDefaults.standard
+    private var userDefaults = UserDefaults.standard
     private let key = AppConfiguration.Store.recentCities
     private let maxItem = AppConfiguration.Store.maxItem
+    
+    init(defaults: UserDefaults = .standard) {
+        self.userDefaults = defaults
+    }
     
     func load(_ numberPerPage: Int) -> [City] {
         guard let data = userDefaults.data(forKey: key),

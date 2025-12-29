@@ -7,7 +7,12 @@
 
 import Foundation
 
-class AsyncDebouncer {
+protocol IAsyncDebouncer {
+    func schedule(_ action: @escaping @Sendable () async -> Void)
+    func cancel()
+}
+
+class AsyncDebouncer: IAsyncDebouncer {
     private let delay: UInt64
     private var task: Task<Void, Never>?
 
