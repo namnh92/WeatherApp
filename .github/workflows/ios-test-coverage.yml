@@ -1,0 +1,75 @@
+name: iOS Unit Tests + Coverage
+
+on:
+  push:
+    branches: [ master, unit-test ]
+  pull_request:
+    branches: [ master, unit-test ]
+
+jobs:
+  test:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run tests (with coverage) and create xcresult
+        run: |
+          set -euo pipefail
+
+          xcodebuild test \
+            -project WeatherApp.xcodeproj \
+            -scheme WeatherApp \
+            -testPlan WeatherApp \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult
+
+      - name: Generate coverage report (xccov JSON)
+        run: |
+          set -euo pipefail
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json
+
+      - name: Show coverage in GitHub Summary
+        run: |
+          set -euo pipefail
+          python3 - << 'PY'
+          import json
+          data = json.load(open("coverage.json"))
+          
+          cov = data.get("lineCoverage")
+          if cov is None:
+            raise SystemExit("No lineCoverage found in coverage.json")
+
+          percent = cov * 100.0
+          print(f"Line Coverage: {percent:.2f}%")
+
+          with open("/tmp/summary.md","w") as f:
+            f.write(f"## Code Coverage\n\n**Line Coverage:** `{percent:.2f}%`\n")
+          PY
+          cat /tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if coverage < 100%
+        run: |
+          set -euo pipefail
+          python3 - << 'PY'
+          import json
+          data = json.load(open("coverage.json"))
+          cov = data.get("lineCoverage", 0.0) * 100.0
+          if cov < 100.0:
+            raise SystemExit(f"Coverage {cov:.2f}% < 100%")
+          print(f"Coverage OK: {cov:.2f}%")
+          PY
+
+      - name: Upload xcresult artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults.xcresult
+          path: TestResults.xcresult
+
+      - name: Upload coverage json artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage.json
+          path: coverage.json
