@@ -15,15 +15,9 @@ jobs:
     runs-on: macos-14
 
     steps:
-      # -------------------------
-      # Checkout
-      # -------------------------
       - name: Checkout
         uses: actions/checkout@v4
 
-      # -------------------------
-      # Select Xcode
-      # -------------------------
       - name: Select Xcode 16.2
         run: |
           sudo xcode-select -s /Applications/Xcode_16.2.app
@@ -31,61 +25,48 @@ jobs:
           xcodebuild -version
           xcode-select -p
 
-      # -------------------------
-      # Debug simulator environment
-      # -------------------------
       - name: List simulator runtimes & device types
         run: |
+          set -euo pipefail
           export DEVELOPER_DIR="${DEVELOPER_DIR}"
           xcrun simctl list runtimes
-          xcrun simctl list devicetypes | head -n 20
+          xcrun simctl list devicetypes | head -n 30
+          xcrun simctl list devices available | head -n 60
 
-      # -------------------------
-      # Create & boot simulator
-      # -------------------------
       - name: Create and boot iOS simulator (CI)
         run: |
           set -euo pipefail
           export DEVELOPER_DIR="${DEVELOPER_DIR}"
 
-          # Pick latest available iOS runtime
+          # Must be an identifier like: com.apple.CoreSimulator.SimRuntime.iOS-18-2
           RUNTIME_ID=$(xcrun simctl list runtimes | \
             awk -F '[()]' '/iOS/ && /com.apple.CoreSimulator.SimRuntime.iOS/ {print $2}' | tail -n 1)
 
           if [ -z "${RUNTIME_ID:-}" ]; then
-            echo "❌ No iOS simulator runtime found"
+            echo "❌ No iOS runtime identifier found"
             xcrun simctl list runtimes
             exit 1
           fi
 
-          echo "✅ Using runtime: $RUNTIME_ID"
+          echo "✅ Using runtime id: $RUNTIME_ID"
 
-          # Use a stable device type
           DEVTYPE_ID="com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro"
 
-          # Create fresh simulator for CI
           UDID=$(xcrun simctl create "CI-iPhone" "$DEVTYPE_ID" "$RUNTIME_ID")
           echo "✅ Created simulator UDID: $UDID"
           echo "SIM_UDID=$UDID" >> $GITHUB_ENV
 
-          # Boot simulator
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b
 
-          # Verify
           xcrun simctl list devices | grep "$UDID" || true
 
-      # -------------------------
-      # Show destinations (debug)
-      # -------------------------
       - name: Show Xcode destinations
         run: |
+          set -euo pipefail
           export DEVELOPER_DIR="${DEVELOPER_DIR}"
           xcodebuild -project WeatherApp.xcodeproj -scheme WeatherApp -showdestinations
 
-      # -------------------------
-      # Run tests with coverage
-      # -------------------------
       - name: Run unit tests (with coverage)
         run: |
           set -euo pipefail
@@ -100,23 +81,16 @@ jobs:
             -resultBundlePath TestResults.xcresult \
             -destination-timeout 120
 
-      # -------------------------
-      # Generate coverage JSON
-      # -------------------------
       - name: Generate coverage report (xccov)
         run: |
           set -euo pipefail
           xcrun xccov view --report --json TestResults.xcresult > coverage.json
 
-      # -------------------------
-      # Show coverage in summary
-      # -------------------------
       - name: Show coverage in GitHub Summary
         run: |
           set -euo pipefail
           python3 - << 'PY'
           import json
-
           with open("coverage.json") as f:
               data = json.load(f)
 
@@ -125,39 +99,27 @@ jobs:
               raise SystemExit("No lineCoverage found in coverage.json")
 
           percent = cov * 100.0
-
-          with open("/tmp/summary.md", "w") as f:
+          with open("/tmp/summary.md","w") as f:
               f.write("## Code Coverage\n\n")
               f.write(f"**Line Coverage:** `{percent:.2f}%`\n")
-
           print(f"Line Coverage: {percent:.2f}%")
           PY
-
           cat /tmp/summary.md >> "$GITHUB_STEP_SUMMARY"
 
-      # -------------------------
-      # Enforce 100% coverage
-      # -------------------------
       - name: Fail if coverage < 100%
         run: |
           set -euo pipefail
           python3 - << 'PY'
           import json
-
           with open("coverage.json") as f:
               data = json.load(f)
 
           percent = data.get("lineCoverage", 0.0) * 100.0
-
           if percent < 100.0:
               raise SystemExit(f"❌ Coverage {percent:.2f}% < 100%")
-
           print(f"✅ Coverage OK: {percent:.2f}%")
           PY
 
-      # -------------------------
-      # Upload artifacts
-      # -------------------------
       - name: Upload xcresult artifact
         uses: actions/upload-artifact@v4
         with:
