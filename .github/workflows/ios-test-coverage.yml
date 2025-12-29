@@ -2,9 +2,9 @@ name: iOS Unit Tests + Coverage
 
 on:
   push:
-    branches: [ master, unit-test ]
+    branches: [ master, feature/unit-test ]
   pull_request:
-    branches: [ master, unit-test ]
+    branches: [ master, feature/unit-test ]
 
 jobs:
   test:
