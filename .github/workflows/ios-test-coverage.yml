@@ -22,13 +22,13 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_16.2.app
           xcodebuild -version
         
-        - name: Check iOS simulator runtimes/devices
+      - name: Check iOS simulator runtimes/devices
         run: |
           xcrun simctl list runtimes
           xcrun simctl list devicetypes | head
           xcrun simctl list devices available
 
-        - name: Create and boot iOS simulator
+      - name: Create and boot iOS simulator
         run: |
           set -euo pipefail
           RUNTIME=$(xcrun simctl list runtimes | awk -F'[()]' '/iOS/ && /available/ {print $2}' | tail -n 1)
