@@ -7,13 +7,21 @@
 
 import Foundation
 
+protocol IWeatherQueryAdapter {
+    func getWeather(latitude: Double, longitude: Double) -> URLRequest
+}
+
+protocol IWeatherResponseAdapter {
+    func getWeather(_ data: Data) throws -> Weather
+}
+
 struct WeatherRepositoryImpl {
     private let client: HTTPClient
-    private let queryAdapter: QueryAdapter
-    private let responseAdapter: ResponseAdapter
+    private let queryAdapter: IQueryAdapter
+    private let responseAdapter: IResponseAdapter
     private let cache: WeatherCache
     
-    init(client: HTTPClient, queryAdapter: QueryAdapter, responseAdapter: ResponseAdapter, cache: WeatherCache) {
+    init(client: HTTPClient, queryAdapter: IQueryAdapter, responseAdapter: IResponseAdapter, cache: WeatherCache) {
         self.client = client
         self.queryAdapter = queryAdapter
         self.responseAdapter = responseAdapter

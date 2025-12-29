@@ -10,5 +10,5 @@ import Foundation
 struct APIConfig {
     let apiKey: String
     let apiBaseURL: URL?
-    let format: String = "json"
+    let format: String
 }

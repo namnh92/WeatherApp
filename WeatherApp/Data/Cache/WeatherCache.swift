@@ -7,17 +7,32 @@
 
 import Foundation
 
-final class WeatherCache {
+class WeatherCache {
+    private class Entry {
+        let weather: Weather
+        let timestamp: Date
 
-    private let cache = NSCache<NSString, CacheWeatherEntry>()
-    private let ttl: TimeInterval = AppConfiguration.cacheExpiredTime
+        init(weather: Weather, timestamp: Date) {
+            self.weather = weather
+            self.timestamp = timestamp
+        }
+    }
 
+    private let cache = NSCache<NSString, Entry>()
+    private let now: () -> Date
+    private let ttl: TimeInterval
+
+    init(ttl: TimeInterval, now: @escaping () -> Date = Date.init) {
+        self.ttl = ttl
+        self.now = now
+    }
+    
     func get(cityId: String) -> Weather? {
         guard let entry = cache.object(forKey: cityId as NSString) else {
             return nil
         }
 
-        if Date().timeIntervalSince(entry.timestamp) > ttl {
+        if now().timeIntervalSince(entry.timestamp) > ttl {
             cache.removeObject(forKey: cityId as NSString)
             return nil
         }
@@ -26,17 +41,7 @@ final class WeatherCache {
     }
 
     func set(_ weather: Weather, cityId: String) {
-        let entry = CacheWeatherEntry(weather: weather, timestamp: Date())
+        let entry = Entry(weather: weather, timestamp: now())
         cache.setObject(entry, forKey: cityId as NSString)
-    }
-}
-
-final class CacheWeatherEntry {
-    let weather: Weather
-    let timestamp: Date
-
-    init(weather: Weather, timestamp: Date) {
-        self.weather = weather
-        self.timestamp = timestamp
     }
 }

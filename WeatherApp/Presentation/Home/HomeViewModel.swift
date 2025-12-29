@@ -6,14 +6,18 @@
 //
 
 protocol IHomeViewModel {
-    
+    var onStateChange: ((HomeViewState) -> Void)? { get set }
+
+    func onViewWillAppear()
+    func onSearchTextChanged(_ text: String)
+    func cityViewed(_ city: City)
 }
 
 class HomeViewModel: IHomeViewModel {
     // MARK: - Variables
     private let getCityUseCase: IGetCityUseCase
     private let getRecentCityUseCase: IGetRecentCityUseCase
-    private let debouncer: AsyncDebouncer
+    private let debouncer: IAsyncDebouncer
     
     var onStateChange: ((HomeViewState) -> Void)?
     
@@ -24,7 +28,7 @@ class HomeViewModel: IHomeViewModel {
     // MARK: - Initial
     init(getCityUseCase: IGetCityUseCase,
          getRecentCityUseCase: IGetRecentCityUseCase,
-         debouncer: AsyncDebouncer) {
+         debouncer: IAsyncDebouncer) {
         self.getCityUseCase = getCityUseCase
         self.getRecentCityUseCase = getRecentCityUseCase
         self.debouncer = debouncer
@@ -42,7 +46,7 @@ class HomeViewModel: IHomeViewModel {
         
         debouncer.schedule { [weak self] in
             guard let self else { return }
-            Task { await self.search(query: text) }
+            await self.search(query: text)
         }
     }
     
@@ -57,7 +61,7 @@ class HomeViewModel: IHomeViewModel {
 
 // MARK: - Private function
 private extension HomeViewModel {
-    private func search(query: String) async {
+    func search(query: String) async {
         do {
             let cities = try await getCityUseCase.execute(query)
             
